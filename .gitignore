@@ -1,0 +1,39 @@
+# Data and generated outputs
+/results/
+/alphalab_results/
+/BTG-OBD-A26/
+/tmp/
+/output/
+/logs/
+
+# Credentials
+.env
+.env.*
+!.env.example
+
+# Local environments and Python build/test state
+.venv/
+venv/
+*.egg-info/
+/build/
+/dist/
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+.mypy_cache/
+.coverage
+htmlcov/
+
+# Generated ledgers, databases, data products, and logs
+*.jsonl
+*.sqlite
+*.sqlite3
+*.db
+*.parquet
+*.log
+
+# Editor and OS state
+.DS_Store
+.idea/
+.vscode/

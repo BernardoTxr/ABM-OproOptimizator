@@ -1,0 +1,17 @@
+scenario_name: base_scenario
+scenario_description: >
+  Baseline market calibrated to ASAI3 on B3 (~R$8.08, tick=0.01).
+  Three aggregate agents represent two-sided market-order flow, random passive
+  depth, and a ladder-maintaining market maker. 1-hour session at 1-second
+  timesteps.
+
+n_scenarios: 10
+agents_yaml: agents.yaml
+environment_yaml: ../paper/environment.yaml
+environment_overrides:
+  end_time: 3600.0
+
+time_step: 1          # seconds per timestep
+random_seed: 42
+n_workers: 7            # parallel worker processes (1 = serial)
+output_directory: results

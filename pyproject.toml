@@ -1,0 +1,60 @@
+[build-system]
+requires = ["setuptools>=69"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "abm-opro-optimizer"
+version = "1.0.0"
+description = "Reproducible LLM and numerical optimization of an agent-based limit-order-book simulator"
+readme = "README.md"
+requires-python = ">=3.12,<3.13"
+license = {file = "LICENSE"}
+authors = [
+  {name = "Bernardo Teixeira"},
+  {name = "João Pedro Alexandrino"},
+  {name = "Renan Avila"},
+]
+keywords = [
+  "agent-based model",
+  "limit order book",
+  "large language model",
+  "optimization",
+  "simulation",
+]
+classifiers = [
+  "Development Status :: 4 - Beta",
+  "License :: OSI Approved :: MIT License",
+  "Programming Language :: Python :: 3.12",
+  "Topic :: Scientific/Engineering",
+]
+dependencies = [
+  "click>=8.1.7",
+  "matplotlib>=3.8.0",
+  "numpy>=1.26.0",
+  "optuna>=4.9.0,<5.0",
+  "pandas>=2.2.0",
+  "pyarrow>=15.0.0",
+  "PyYAML>=6.0.1",
+  "scipy>=1.12.0",
+  "sortedcontainers>=2.4.0",
+  "tqdm>=4.66.0",
+]
+
+[project.optional-dependencies]
+dev = ["pytest>=8"]
+foundry = ["anthropic==1.8.0"]
+
+[project.urls]
+Homepage = "https://github.com/BernardoTxr/ABM-OproOptimizator"
+Repository = "https://github.com/BernardoTxr/ABM-OproOptimizator.git"
+Issues = "https://github.com/BernardoTxr/ABM-OproOptimizator/issues"
+
+[project.scripts]
+lob-sim = "lob_sim.cli:cli"
+
+[tool.setuptools.packages.find]
+include = ["lob_sim*", "real_lob_inference*", "workflows*"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+pythonpath = ["."]

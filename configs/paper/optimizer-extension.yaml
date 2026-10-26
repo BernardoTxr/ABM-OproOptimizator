@@ -1,0 +1,79 @@
+# Historical post-hoc eight-arm comparison. Its completed artifacts support the
+# current draft, but this configuration is not executable through the new
+# ticker-specific paper protocol.
+version: icaif_optimizer_extension_v1
+status: historical_only
+base_optimizer_config: optimizer.yaml
+comparison_study_name: icaif_smm_v4_optimizer_comparison
+environment_lock: optimizer-extension-environment-lock.yaml
+
+survey_basis:
+  simulation_optimization: 10.1007/s10479-015-2019-x
+  derivative_free_optimization: 10.1017/S0962492919000060
+
+methods:
+  - sobol
+  - gp_bo
+  - cma_es
+  - bads
+
+comparison_methods:
+  - random
+  - tpe
+  - opro_plain
+  - opro_heuristic
+  - sobol
+  - gp_bo
+  - cma_es
+  - bads
+
+method_settings:
+  sobol:
+    family: randomized_quasi_monte_carlo
+    implementation: scipy.stats.qmc.Sobol
+    sequence_seed: 20260911
+    initialization: frozen_common_prefix_then_disjoint_contiguous_adaptive_blocks
+    rationale: nonadaptive_space_filling_control_stronger_than_iid_random_search
+    citation: 10.1016/0041-5553(67)90144-9
+  gp_bo:
+    family: gaussian_process_bayesian_optimization
+    implementation: optuna.samplers.GPSampler
+    acquisition: log_expected_improvement
+    kernel: matern_5_2_ard
+    deterministic_objective: true
+    startup_trials: 12
+    rationale: sample_efficient_global_surrogate_for_expensive_low_dimensional_objective
+    citation: 10.48550/arXiv.1807.02811
+  cma_es:
+    family: evolutionary_strategy
+    implementation: optuna.samplers.CmaEsSampler
+    startup_trials: 12
+    initialization: optuna_default_after_forced_common_design
+    rationale: population_based_covariance_adaptation_for_nonseparable_nonconvex_landscape
+    citation: 10.48550/arXiv.1604.00772
+  bads:
+    family: hybrid_bayesian_direct_search
+    implementation: pybads.BADS
+    uncertainty_handling: false
+    nonlinear_scaling: false
+    initialization: charged_mesh_projection_of_best_valid_common_design_incumbent
+    plausible_bounds: transformed_unit_box_0.05_to_0.95
+    invalid_penalty: 1000000.0
+    rationale: hybrid_surrogate_and_direct_search_designed_for_rough_costly_model_fitting
+    citations: [10.21105/joss.05694, 10.48550/arXiv.1705.04405]
+
+common_contract:
+  repetitions: 3
+  charged_slots_per_repetition: 50
+  common_initial_slots: 12
+  invalid_proposals: charged
+  duplicate_proposals: charged
+  search_oracle: deterministic_common_random_numbers
+  temporal_evaluation: reused_later_120_scenario_schedule
+
+disclosure: >
+  These four arms were selected after inspection of the completed primary
+  Random/TPE/OPRO benchmark. The comparison reruns all eight policies under one
+  current evaluator fingerprint. It is a post-hoc optimizer-robustness extension,
+  not part of the original frozen four-arm comparison, and does not mix legacy
+  objectives whose strict fingerprints predate the repository refactor.

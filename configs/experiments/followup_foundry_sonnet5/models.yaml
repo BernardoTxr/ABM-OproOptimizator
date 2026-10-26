@@ -1,0 +1,18 @@
+version: anthropic_foundry_model_registry_v1
+models:
+  claude_sonnet5_foundry_v1:
+    deployment_name_env: ANTHROPIC_FOUNDRY_DEPLOYMENT
+    request:
+      # A live preflight call at max_tokens: 4096 with no explicit thinking
+      # config failed with stop_reason: max_tokens -- extended thinking
+      # consumed the entire ceiling before any JSON text was emitted, the
+      # same failure class this repo's own v6->v7 Qwen incident hit.
+      # thinking.type "enabled"+budget_tokens is also rejected live by this
+      # deployment ("not supported for this model. Use thinking.type.adaptive
+      # and output_config.effort to control thinking behavior") -- so
+      # reasoning depth is controlled by output_effort (merged into
+      # output_config.effort by the adapter) instead of a token budget.
+      max_tokens: 8192
+      thinking:
+        type: adaptive
+      output_effort: medium

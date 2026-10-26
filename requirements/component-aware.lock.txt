@@ -1,0 +1,6 @@
+# Additional exact dependencies for the prospective component-aware study.
+# Install the primary paper environment first from icaif.lock.txt.
+--extra-index-url https://download.pytorch.org/whl/cpu
+pybads==1.0.6
+scikit-learn==1.9.0
+torch==2.14.0+cpu

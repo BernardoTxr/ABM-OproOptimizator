@@ -1,0 +1,72 @@
+# Five-mechanism ecology used by the ICAIF paper. The market maker uses
+# order_size and level_size_growth to define a continuous nondecreasing depth
+# ladder.
+agents:
+  - archetype: NoiseTrader
+    id: liquidity_demand
+    count: 1
+    parameters:
+      side: random
+      buy_probability: 0.49
+      activity: 0.45
+      order_size: 600.0
+      order_size_sigma: 1.3
+      max_order_size: 8000.0
+      lot_size: 100.0
+      burst_size: 1.1
+      pause_probability: 0.008
+      mean_pause_steps: 15.0
+      side_persistence: 0.30
+
+  - archetype: ValueTrader
+    id: value_flow
+    count: 1
+    parameters:
+      fundamental_price: null
+      value_volatility: 0.0008
+      signal_noise: 0.002
+      activity: 0.02
+      order_size: 400.0
+      threshold: 0.005
+      inventory_limit: 10000.0
+
+  - archetype: MomentumTrader
+    id: momentum_flow
+    count: 1
+    parameters:
+      lookback: 30
+      activity: 0.02
+      order_size: 400.0
+      threshold: 0.001
+      limit_timeout: 5
+      inventory_limit: 10000.0
+
+  - archetype: RandomLimitOrderTrader
+    id: passive_depth
+    count: 1
+    parameters:
+      activity: 1.8
+      order_size: 200.0
+      price_offset: 0.05
+      tick_size: 0.01
+      inside_probability: 0.10
+      cancel_probability: 0.01
+      best_probability: 0.05
+      imbalance_sensitivity: 0.25
+
+  - archetype: MultiLevelMarketMaker
+    id: market_maker
+    count: 1
+    parameters:
+      levels: 5
+      spread: 0.005
+      tick_size: 0.01
+      order_size: 21600.0
+      level_size_growth: 0.225
+      inventory_limit: 70000.0
+      inventory_skew_ticks: 2
+      inventory_size_skew: 0.25
+      wide_spread_probability: 0.18
+      spread_state_persistence: 0.98
+      recenter_rate: 0.0
+      recenter_threshold_ticks: 1.0

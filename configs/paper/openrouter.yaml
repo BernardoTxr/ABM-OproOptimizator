@@ -1,0 +1,17 @@
+version: openrouter_gateway_v1
+endpoint: https://openrouter.ai/api/v1/chat/completions
+api_key_env: OPENROUTER_API_KEY
+timeout_seconds: 300
+transport_reliability:
+  # Only the inexpensive LLM requests are serialized. Simulator evaluations
+  # remain concurrent across all five ticker processes.
+  coordination_lock: ../../tmp/openrouter-request.lock
+  max_attempts: 6
+  retry_http_statuses: [429, 500, 502, 503, 504]
+  initial_backoff_seconds: 5
+  max_backoff_seconds: 60
+application_title: ICAIF OPRO Simulator Calibration
+system_prompt: >
+  You are the proposal engine in a black-box optimization experiment. Use only
+  the supplied prompt. Do not request tools or external context. Return exactly
+  one JSON object satisfying the supplied schema, with no Markdown.

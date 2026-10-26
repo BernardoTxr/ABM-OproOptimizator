@@ -1,0 +1,44 @@
+# ICAIF 2026 intraday protocol. Ten non-overlapping 30-minute windows tile the
+# repository's existing safe 14:00--19:00 UTC research interval. Raw-data
+# inspection finds first ASAI3 trades around 13:01--13:10 and trading beyond
+# 20:50 on every included date, so these windows avoid both boundary regimes.
+data_dir: BTG-OBD-A26
+depth: 10
+lob_depth: 5
+session_start_utc: "14:00:00"
+session_end_utc: "19:00:00"
+window_duration_hours: 0.5
+window_starts_utc:
+  - "14:00:00"
+  - "14:30:00"
+  - "15:00:00"
+  - "15:30:00"
+  - "16:00:00"
+  - "16:30:00"
+  - "17:00:00"
+  - "17:30:00"
+  - "18:00:00"
+  - "18:30:00"
+cache_label: intraday_30m
+
+date_splits:
+  development:
+    - "20251013"
+    - "20251014"
+    - "20251020"
+    - "20251021"
+    - "20251024"
+    - "20251027"
+    - "20251107"
+    - "20251110"
+    - "20251126"
+    - "20251127"
+    - "20251204"
+    - "20251205"
+  test:
+    - "20251229"
+    - "20251230"
+    - "20260123"
+    - "20260126"
+    - "20260128"
+    - "20260129"

@@ -1,0 +1,13 @@
+version: icaif_environment_v1
+python_major_minor: "3.12"
+packages:
+  click: "8.4.2"
+  numpy: "2.5.1"
+  pandas: "3.0.3"
+  pyarrow: "25.0.0"
+  PyYAML: "6.0.1"
+  scipy: "1.18.0"
+  sortedcontainers: "2.4.0"
+  tqdm: "4.69.0"
+  matplotlib: "3.11.1"
+  optuna: "4.9.0"

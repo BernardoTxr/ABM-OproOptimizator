@@ -1,0 +1,23 @@
+version: xeon_e2146g_parallel_v1
+
+# Operational configuration only. These settings change scheduling and wall
+# time, not candidates, seeds, simulated paths, losses, or optimizer budgets.
+machine:
+  label: reference_host
+  architecture: x86_64
+  cpu_model: Intel(R) Xeon(R) E-2146G CPU @ 3.50GHz
+  physical_cores: 6
+  logical_cpus: 12
+  threads_per_core: 2
+  max_frequency_mhz: 4500
+  l3_cache_mib: 12
+  memory_gib: 64
+  numa_nodes: 1
+
+execution:
+  ticker_workers: 5
+  simulation_workers_per_ticker: 3
+  cpu_affinity: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10]
+  reserved_logical_cpus: [11]
+  numerical_library_threads: 1
+  projected_full_calibration_wall_hours: [10, 14]

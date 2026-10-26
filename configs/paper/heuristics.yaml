@@ -1,0 +1,116 @@
+version: component_mechanisms_smm_v1
+scope: six grouped SMM losses and bounded simulator controls
+
+semantics:
+  - Group losses are nonnegative squared discrepancies; they do not reveal whether a simulated feature is above or below its empirical target.
+  - Directional effects describe simulator mechanisms, not the unknown direction that will reduce a group loss.
+  - Infer useful move directions from the observed parameter-and-loss history; do not infer a residual sign from a group loss.
+  - Mechanisms are proposal guidance, not executable constraints or monotonic guarantees.
+  - Prefer small, attributable moves and account for collateral loss groups.
+
+mechanisms:
+  - id: maker_spread_regime
+    primary_components: [spread]
+    controls:
+      - parameter: maker_wide_spread_probability
+        simulated_feature_effect_when_increased: decreases one-tick-spread occupancy
+        maximum_fraction_of_range: 0.15
+    mechanism: Controls how often the market maker quotes the wider spread regime.
+    collateral_components: [returns, inter_arrival, depth]
+
+  - id: maker_depth_scale
+    primary_components: [depth]
+    controls:
+      - parameter: maker_base_depth
+        simulated_feature_effect_when_increased: increases displayed depth across ladder levels
+        maximum_fraction_of_range: 0.15
+    mechanism: Sets the common scale of the market maker's displayed ladder.
+    collateral_components: [spread, inter_arrival]
+
+  - id: maker_depth_shape
+    primary_components: [depth]
+    controls:
+      - parameter: maker_depth_growth
+        simulated_feature_effect_when_increased: increases far-level depth relative to near-level depth
+        maximum_fraction_of_range: 0.15
+    mechanism: Tilts the displayed-depth profile from the inside toward deeper levels.
+    collateral_components: [spread]
+
+  - id: aggressive_order_scale
+    primary_components: [trade_size]
+    controls:
+      - parameter: liquidity_order_size
+        simulated_feature_effect_when_increased: increases the scale of aggressive order and transaction sizes
+        maximum_fraction_of_range: 0.15
+    mechanism: Changes the typical aggressive quantity submitted by liquidity demand.
+    collateral_components: [returns, inter_arrival, depth]
+
+  - id: aggressive_flow_intensity
+    primary_components: [inter_arrival, returns]
+    controls:
+      - parameter: liquidity_activity
+        simulated_feature_effect_when_increased: shortens trade waits and increases aggressive-flow intensity
+        maximum_fraction_of_range: 0.10
+    mechanism: Controls how frequently liquidity-demand events arrive.
+    collateral_components: [spread, trade_size, depth]
+
+  - id: aggressive_flow_bursts
+    primary_components: [inter_arrival, trade_size]
+    controls:
+      - parameter: liquidity_burst_size
+        simulated_feature_effect_when_increased: increases clustered and same-timestamp aggressive submissions
+        maximum_fraction_of_range: 0.15
+    mechanism: Controls clustering conditional on a liquidity-demand activation.
+    collateral_components: [returns, depth]
+
+  - id: aggressive_side_balance
+    primary_components: [imbalance]
+    controls:
+      - parameter: liquidity_buy_probability
+        simulated_feature_effect_when_increased: shifts aggressive flow toward buys and book imbalance toward the bid side
+        maximum_fraction_of_range: 0.10
+    mechanism: Controls the unconditional directional balance of liquidity demand.
+    collateral_components: [returns, depth]
+
+  - id: aggressive_side_persistence
+    primary_components: [imbalance, returns]
+    controls:
+      - parameter: liquidity_side_persistence
+        simulated_feature_effect_when_increased: increases runs of same-side aggressive flow
+        maximum_fraction_of_range: 0.10
+    mechanism: Controls serial dependence in liquidity-demand direction.
+    collateral_components: [inter_arrival, depth]
+
+  - id: private_value_flow
+    primary_components: [returns, spread]
+    controls:
+      - parameter: value_activity
+        simulated_feature_effect_when_increased: increases crossings motivated by deviations from private value
+        maximum_fraction_of_range: 0.10
+    mechanism: Adds value-sensitive aggressive flow around the fixed no-trade band.
+    collateral_components: [inter_arrival, imbalance]
+
+  - id: momentum_flow
+    primary_components: [returns]
+    controls:
+      - parameter: momentum_activity
+        simulated_feature_effect_when_increased: increases trend-following aggressive flow after recent price moves
+        maximum_fraction_of_range: 0.10
+    mechanism: Adds short-horizon trend-following pressure.
+    collateral_components: [imbalance, inter_arrival, depth]
+
+  - id: passive_imbalance_response
+    primary_components: [imbalance, depth]
+    controls:
+      - parameter: passive_imbalance_sensitivity
+        simulated_feature_effect_when_increased: strengthens side-dependent passive placement responses to visible imbalance
+        maximum_fraction_of_range: 0.10
+    mechanism: Redistributes passive liquidity conditional on current top-of-book imbalance.
+    collateral_components: [spread, returns]
+
+proposal_guidance:
+  - Compare nearby historical candidates before assigning a move direction; group losses alone contain no residual sign.
+  - Prefer a control whose primary component is currently costly and whose collateral components are acceptable.
+  - Change one mechanism block at a time when evidence is weak.
+  - Do not repeat a prior candidate; duplicates are charged.
+  - State falsifiable predictions only for the six visible loss components.

@@ -1,0 +1,42 @@
+# Test Books template for the calibration-best ticker-specific candidates.
+study_name: icaif_smm_v9_ticker_specific_10x30m/ASAI3/test
+symbol: ASAI3
+split: test
+base_config: scenario.yaml
+real_config: ticker-books.yaml
+loss_config: loss.yaml
+smm_target_cache: ../../results/real/ASAI3/smm_target_test_10x30m_smm_v4.json
+smm_window_moment_cache: ../../results/real/ASAI3/smm_target_test_10x30m_smm_v4.windows.parquet
+# Test target means come from Test Books, but the SMM standard errors and
+# covariance are frozen from the corresponding ticker's Calibration Books.
+smm_weight_source: ticker_calibration_target
+smm_weight_target_cache: ../../results/real/ASAI3/smm_target_calibration_10x30m_smm_v4.json
+output_directory: ../../results/optimization
+replications_per_trial: 90
+# Test candidates are evaluated sequentially, so one evaluation can use all
+# eleven logical CPUs allocated to the experiment on the Xeon host.
+simulation_workers: 11
+evaluation_seed: 92700
+# Only the 40 calibration-selected candidates reach this stage. Preserve their
+# raw Test Book paths for optional real-versus-simulated distribution, path,
+# and book-dynamics figures without rerunning the simulator.
+simulation_output_retention: full
+
+validity_gates:
+  min_book_coverage: 0.99
+  min_trades_per_scenario: 20
+  required_depth_levels: 5
+  min_depth_coverage: 0.99
+
+search_space:
+  - {name: liquidity_activity, type: float, low: 0.10, high: 1.20, log: true, targets: [{agent: liquidity_demand, field: parameters.activity}]}
+  - {name: liquidity_buy_probability, type: float, low: 0.30, high: 0.70, targets: [{agent: liquidity_demand, field: parameters.buy_probability}]}
+  - {name: liquidity_side_persistence, type: float, low: 0.00, high: 0.95, targets: [{agent: liquidity_demand, field: parameters.side_persistence}]}
+  - {name: liquidity_burst_size, type: float, low: 0.00, high: 5.00, targets: [{agent: liquidity_demand, field: parameters.burst_size}]}
+  - {name: liquidity_order_size, type: float, low: 100.00, high: 1200.00, log: true, targets: [{agent: liquidity_demand, field: parameters.order_size}]}
+  - {name: value_activity, type: float, low: 0.00, high: 0.20, targets: [{agent: value_flow, field: parameters.activity}]}
+  - {name: momentum_activity, type: float, low: 0.00, high: 0.20, targets: [{agent: momentum_flow, field: parameters.activity}]}
+  - {name: passive_imbalance_sensitivity, type: float, low: 0.00, high: 1.00, targets: [{agent: passive_depth, field: parameters.imbalance_sensitivity}]}
+  - {name: maker_wide_spread_probability, type: float, low: 0.00, high: 0.80, targets: [{agent: market_maker, field: parameters.wide_spread_probability}]}
+  - {name: maker_base_depth, type: float, low: 5000.0, high: 80000.0, log: true, targets: [{agent: market_maker, field: parameters.order_size}]}
+  - {name: maker_depth_growth, type: float, low: 0.00, high: 1.00, targets: [{agent: market_maker, field: parameters.level_size_growth}]}

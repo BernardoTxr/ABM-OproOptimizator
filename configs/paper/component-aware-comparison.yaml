@@ -1,0 +1,199 @@
+# Prospectively specified five-ticker, scalar-versus-component-aware
+# comparison. Each ticker is an independent optimization task and owns its
+# parameter vectors, histories, empirical targets, and final incumbents.
+version: icaif_ticker_specific_component_comparison_v6
+status: ready_to_run
+calibration_optimizer_config: optimizer.yaml
+test_evaluator_config: later-evaluation.yaml
+comparison_study_name: icaif_smm_v9_ticker_specific_10x30m
+environment_lock: component-aware-environment-lock.yaml
+llm_model_key: qwen_qwen3_8_flash_8192_routed
+tickers: [ASAI3, CSAN3, ITSA4, LREN3, MGLU3]
+parameter_scope: independent_vector_per_ticker
+
+book_sets:
+  source: ticker-books.yaml
+  split_unit: whole_date
+  calibration_variable: CalibrationBooks
+  test_variable: TestBooks
+  calibration_dates: 9
+  test_dates: 9
+  windows_per_date: 10
+  calibration_books_per_ticker: 90
+  test_books_per_ticker: 90
+  total_books_per_ticker: 180
+  statistical_cluster_unit: whole_date
+  independent_clusters_per_partition: 9
+  same_date_split_for_all_tickers: true
+  no_date_crosses_partitions: true
+
+survey_basis:
+  simulation_optimization: 10.1007/s10479-015-2019-x
+  derivative_free_optimization: 10.1017/S0962492919000060
+
+methods:
+  - sobol
+  - tpe
+  - bads
+  - gp_bo
+  - mo_tpe
+  - component_gp_bo
+  - opro_plain
+  - opro_heuristic
+
+scalar_feedback_methods: [sobol, tpe, bads, gp_bo]
+component_aware_methods: [mo_tpe, component_gp_bo, opro_plain, opro_heuristic]
+
+feedback_contract:
+  version: grouped_smm_feedback_v1
+  component_order: [returns, spread, imbalance, trade_size, inter_arrival, depth]
+  final_aggregation: equal_weight_mean
+  signed_moment_residuals: audit_only
+  invalid_penalty: 1000000.0
+  information_firewall:
+    sobol: none
+    tpe: scalar
+    bads: scalar
+    gp_bo: scalar
+    mo_tpe: component
+    component_gp_bo: component
+    opro_plain: component
+    opro_heuristic: component
+
+method_settings:
+  sobol:
+    family: randomized_quasi_monte_carlo
+    implementation: scipy.stats.qmc.Sobol
+    sequence_seed: 20260911
+    initialization: frozen_common_prefix_then_disjoint_contiguous_adaptive_blocks
+    rationale: nonadaptive_space_filling_control_for_bounded_continuous_search
+    citation: 10.1016/0041-5553(67)90144-9
+  tpe:
+    family: scalar_tree_structured_parzen_estimator
+    implementation: optuna.samplers.TPESampler
+    startup_trials: 12
+    multivariate: true
+    rationale: common_density_based_baseline_for_expensive_black_box_optimization
+    citation: 10.5555/2986459.2986743
+  bads:
+    family: hybrid_bayesian_direct_search
+    implementation: pybads.BADS
+    uncertainty_handling: false
+    nonlinear_scaling: false
+    initialization: charged_mesh_projection_of_best_valid_common_design_incumbent
+    plausible_bounds: transformed_unit_box_0.05_to_0.95
+    rationale: hybrid_surrogate_and_direct_search_for_rough_costly_model_fitting
+    citations: [10.21105/joss.05694, 10.48550/arXiv.1705.04405]
+  gp_bo:
+    family: scalar_gaussian_process_bayesian_optimization
+    implementation: optuna.samplers.GPSampler
+    acquisition: log_expected_improvement
+    startup_trials: 12
+    rationale: sample_efficient_scalar_surrogate_for_expensive_low_dimensional_search
+    citation: 10.48550/arXiv.1807.02811
+  mo_tpe:
+    family: multiobjective_tree_structured_parzen_estimator
+    implementation: optuna.samplers.TPESampler
+    objectives: six_grouped_smm_losses
+    scalar_audit: known_equal_weight_mean
+    startup_trials: 12
+    multivariate: true
+    rationale: matched_TPE_ablation_that_can_model_tradeoffs_among_loss_groups
+    citation: 10.5555/2986459.2986743
+  component_gp_bo:
+    family: component_aware_gaussian_process_bayesian_optimization
+    implementation: six_independent_sklearn_gaussian_processes
+    kernel: matern_5_2_ard_plus_white_noise
+    independent_outputs: true
+    normalize_y: true
+    optimizer_restarts: 1
+    acquisition: expected_improvement_of_known_equal_weight_sum
+    candidate_pool_size: 4096
+    exploration: 0.01
+    rationale: matched_GP_ablation_that_uses_group_structure_without_changing_the_target
+    citation: 10.48550/arXiv.1807.02811
+  opro_plain:
+    family: component_aware_llm_proposal_policy
+    implementation: openrouter_chat_completions
+    heuristic_condition: false
+    rationale: tests_whether_a_language_model_can_use_structured_numerical_feedback
+  opro_heuristic:
+    family: component_aware_llm_proposal_policy
+    implementation: openrouter_chat_completions
+    heuristic_condition: true
+    heuristic_registry_version: component_mechanisms_smm_v1
+    signed_residual_triggers: forbidden
+    rationale: isolates_the_incremental_value_of_frozen_domain_heuristics
+
+common_contract:
+  repetitions: 5
+  charged_slots_per_repetition: 50
+  common_initial_slots: 12
+  invalid_proposals: charged
+  duplicate_proposals: charged
+  search_oracle: deterministic_common_random_numbers
+  per_book_diagnostics: disabled_as_non_scientific_output
+  calibration_evaluation: 90_calibration_books_per_ticker
+  test_evaluation: 90_test_books_per_selected_ticker_candidate
+
+archival_contract:
+  calibration_raw_outputs: compact_after_validated_smm_archive
+  calibration_per_trial:
+    - candidate_and_status
+    - objective_and_six_component_losses
+    - twenty_nine_aggregate_moments_targets_differences_and_residuals
+    - ninety_scenario_moment_vectors_with_date_clock_and_seed_schedule
+    - validity_and_runtime_diagnostics
+    - complete_opro_prompt_response_prediction_and_usage_metadata
+  test_raw_outputs: retain_all_forty_selected_candidates
+  purpose: permit_additional_figures_without_rerunning_selected_models
+
+selection:
+  scope: independently_within_each_ticker_and_method
+  rule: lowest_calibration_loss_across_five_repetition_incumbents
+  confirmation_stage: false
+  selected_vectors: 40
+  test_standardization: frozen_ticker_calibration_standard_errors
+
+problem_classification:
+  evaluation_cost: expensive
+  bounds: box_constrained
+  variables: continuous
+  objective: single_known_equal_weight_smm_loss
+  derivatives: unavailable
+  oracle: deterministic_sample_average_with_common_random_numbers
+  hidden_feasibility: simulator_validity_gates
+
+disclosure: >
+  This five-ticker eight-way scalar-versus-component-aware comparison was
+  specified after inspection of the completed historical optimizer results and
+  before running this new study. It is a prospective follow-up protocol, not
+  part of the original preregistration. Every ticker is calibrated separately;
+  parameter vectors and optimizer histories are never pooled across tickers.
+  All eight policies must be rerun under one ticker-specific evaluator
+  fingerprint, and historical result artifacts must not be combined with this
+  study. The ten-window redesign was frozen after 18 Sobol trial files had been
+  generated under the superseded five-window v5 protocol, but before their
+  objective values were inspected. Those operational-pilot artifacts are
+  excluded and cannot initialize or otherwise enter this study. A subsequent
+  v6 capacity pilot used a 2,048-token Qwen completion ceiling. At the first
+  adaptive OPRO slot, all five requests failed before producing a candidate or
+  simulator objective because reasoning exhausted the completion allowance.
+  Before any OPRO adaptive objective or full calibration was observed, v7 was
+  frozen with a requested 1,024-token reasoning budget inside a 4,096-token
+  completion ceiling, and a representative twelve-observation zero-slot
+  preflight. Provider-reported reasoning usage is recorded and need not equal
+  the requested normalized budget. Its first-adaptive-slot transport gate then
+  exposed HTTP 429 throttling when five ticker requests were sent concurrently
+  to the single pinned provider. V8 was frozen before full calibration or Test
+  Book evaluation. It retains the same Qwen model and proposal contract, but
+  permits ordered provider failover between Makora and Alibaba, serializes only
+  API calls across ticker processes, and retries transient transport failures.
+  The v8 transport gate verified routing, but four of five heuristic-OPRO calls
+  returned no usable object under the 4,096-token ceiling; one response ended
+  at that exact limit after 2,847 reported reasoning tokens. V9 was frozen
+  before full calibration or Test Book evaluation. It raises the completion
+  ceiling to 8,192 and requires the zero-slot preflight to validate both the
+  plain and heuristic conditions at
+  the maximum 49-observation history. All v6--v8 optimizer artifacts are
+  excluded; every arm is rerun cleanly under v9.

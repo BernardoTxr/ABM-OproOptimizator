@@ -1,0 +1,14 @@
+scenario_name: smoke
+scenario_description: Five simulated seconds for installation verification.
+
+n_scenarios: 1
+agents_yaml: agents.yaml
+environment_yaml: ../paper/environment.yaml
+environment_overrides:
+  end_time: 5.0
+
+time_step: 1
+random_seed: 42
+n_workers: 1
+write_diagnostics: false
+output_directory: tmp/smoke

@@ -1,0 +1,27 @@
+tick_size: 0.01
+min_order_size: 100.0
+start_time: 0.0
+end_time: 1800.0       # 30-minute session; with time_step=1 this yields 1 800 timesteps
+# Agents and output observe five levels, while the matching engine retains
+# deeper liquidity so an inside quote does not erase the old visible book.
+lob_depth: 5
+book_storage_depth: 50
+seed_order_lifetime: 1.0
+
+# Seed orders are supplied by the current ticker's reconstructed Calibration
+# Book or Test Book immediately before its assigned measurement window.
+# They establish the time-zero reference and expire after ``seed_order_lifetime``.
+# Format: [[price, quantity], ...]
+initial_snapshot:
+  bids:
+    - [8.10, 39100.0]
+    - [8.09, 24700.0]
+    - [8.08, 27300.0]
+    - [8.07, 42700.0]
+    - [8.06, 31600.0]
+  asks:
+    - [8.11, 6800.0]
+    - [8.12, 12300.0]
+    - [8.13, 16700.0]
+    - [8.14, 20300.0]
+    - [8.15, 27200.0]

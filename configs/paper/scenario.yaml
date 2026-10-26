@@ -1,0 +1,21 @@
+scenario_name: icaif_paper_market
+scenario_description: >
+  Five-mechanism market used by the ICAIF paper, evaluated on clock-balanced
+  30-minute continuous-trading windows.
+n_scenarios: 20
+agents_yaml: agents.yaml
+environment_yaml: environment.yaml
+environment_overrides:
+  end_time: 1800.0
+time_step: 1
+random_seed: 32700
+n_workers: 5
+# Calibration consumes Parquet state and metadata, not per-book PNG reports.
+# Disabling diagnostics removes presentation work without changing the path,
+# validity gates, or SMM objective.
+write_diagnostics: false
+output_directory: results/optimization
+real_window_sampling:
+  symbol: ASAI3
+  real_config: ticker-books.yaml
+  split: calibration

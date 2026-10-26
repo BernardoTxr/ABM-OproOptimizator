@@ -1,0 +1,31 @@
+version: anthropic_foundry_gateway_v1
+base_url_env: ANTHROPIC_FOUNDRY_BASE_URL
+api_key_env: ANTHROPIC_FOUNDRY_API_KEY
+timeout_seconds: 300
+transport_reliability:
+  # Confirmed choice: run the five ticker processes fully concurrent against
+  # this Foundry deployment. No coordination lock, unlike v9's serialized
+  # OpenRouter calls.
+  max_attempts: 6
+  retry_statuses: [rate_limited, server_error, connection_error]
+  initial_backoff_seconds: 5
+  max_backoff_seconds: 60
+system_prompt: >
+  You are the proposal engine in a black-box optimization experiment. Use only
+  the supplied prompt. Do not request tools or external context. Return exactly
+  one JSON object satisfying the supplied schema, with no Markdown.
+pricing:
+  # Seeded from Anthropic's public Sonnet 5 rate card ($2/$10 per MTok
+  # input/output). NOT yet confirmed against this Azure subscription's own
+  # invoice/portal -- status stays unconfirmed until a human verifies it.
+  # Cache rates are unknown, not guessed: left null.
+  status: unconfirmed
+  currency: USD
+  input_usd_per_token: 0.000002
+  output_usd_per_token: 0.00001
+  cache_read_usd_per_token: null
+  cache_write_usd_per_token: null
+  source: >
+    Anthropic's public Claude Sonnet 5 rate card ($2/$10 per million tokens,
+    input/output). Not yet cross-checked against this Azure AI Foundry
+    subscription's own invoice or portal. Cache read/write rates unknown.

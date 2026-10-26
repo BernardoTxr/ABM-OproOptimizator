@@ -1,0 +1,74 @@
+# Five-ticker Calibration Books/Test Books design. Each ticker is calibrated
+# independently. The same whole-date split is used for every ticker so that
+# the five optimizer tasks are matched without sharing parameter vectors.
+data_dir: BTG-OBD-A26
+symbols: [ASAI3, CSAN3, ITSA4, LREN3, MGLU3]
+depth: 10
+lob_depth: 5
+session_start_utc: "14:00:00"
+session_end_utc: "19:00:00"
+window_duration_hours: 0.5
+# Ten non-overlapping clock strata tile the full five-hour session; each is a
+# separate reconstructed book and conditional 30-minute empirical/simulated path.
+window_starts_utc:
+  - "14:00:00"
+  - "14:30:00"
+  - "15:00:00"
+  - "15:30:00"
+  - "16:00:00"
+  - "16:30:00"
+  - "17:00:00"
+  - "17:30:00"
+  - "18:00:00"
+  - "18:30:00"
+cache_label: ticker_books_10x30m
+
+all_dates:
+  - "20251013"
+  - "20251014"
+  - "20251020"
+  - "20251021"
+  - "20251024"
+  - "20251027"
+  - "20251107"
+  - "20251110"
+  - "20251126"
+  - "20251127"
+  - "20251204"
+  - "20251205"
+  - "20251229"
+  - "20251230"
+  - "20260123"
+  - "20260126"
+  - "20260128"
+  - "20260129"
+
+split_design:
+  unit: whole_date
+  pairing: adjacent_chronological_dates
+  assignment: one_date_per_pair_to_each_partition
+  random_seed: 20260910
+  same_split_for_all_tickers: true
+  outcome_blind: true
+
+date_splits:
+  calibration:
+    - "20251013"
+    - "20251021"
+    - "20251024"
+    - "20251107"
+    - "20251127"
+    - "20251205"
+    - "20251230"
+    - "20260123"
+    - "20260128"
+  test:
+    - "20251014"
+    - "20251020"
+    - "20251027"
+    - "20251110"
+    - "20251126"
+    - "20251204"
+    - "20251229"
+    - "20260126"
+    - "20260129"

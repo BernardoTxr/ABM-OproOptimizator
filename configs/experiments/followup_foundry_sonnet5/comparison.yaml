@@ -1,0 +1,43 @@
+# Prospective two-arm OPRO follow-up to icaif_smm_v9_ticker_specific_10x30m.
+# Changes only the proposal-model runtime for opro_plain/opro_heuristic, from
+# OpenRouter/Qwen to Azure AI Foundry/Claude Sonnet 5. Every other scientific
+# input (simulator, loss, search space, seeds, initial design, heuristic
+# registry, book split) is held byte-identical to v9 by referencing the
+# frozen paper configs read-only below, never copying them.
+version: opro_pair_followup_v1
+comparison_study_name: icaif_smm_v9_followup_foundry_sonnet5
+parent_study: icaif_smm_v9_ticker_specific_10x30m
+calibration_optimizer_config: ../../paper/optimizer.yaml
+test_evaluator_config: ../../paper/later-evaluation.yaml
+methods: [opro_plain, opro_heuristic]
+llm_model_key: claude_sonnet5_foundry_v1
+proposal_runtime:
+  kind: anthropic_foundry
+  config: anthropic_foundry.yaml
+  model_registry: models.yaml
+  model_key: claude_sonnet5_foundry_v1
+tickers: [ASAI3, CSAN3, ITSA4, LREN3, MGLU3]
+book_sets:
+  calibration_books_per_ticker: 90
+  test_books_per_ticker: 90
+  total_books_per_ticker: 180
+common_contract:
+  repetitions: 5
+  charged_slots_per_repetition: 50
+  common_initial_slots: 12
+
+disclosure: >
+  Prospective follow-up to icaif_smm_v9_ticker_specific_10x30m; not part of
+  the original preregistration. Reruns only opro_plain and opro_heuristic
+  with the proposal runtime swapped from OpenRouter/Qwen to Azure AI
+  Foundry/Claude Sonnet 5; every other scientific input (simulator, loss,
+  search space, seeds, initial design, heuristic registry, book split) is
+  held byte-identical to v9 via read-only references to the frozen paper
+  configs. Test Books were already observed by v9; this study reuses that
+  evaluation data rather than a pristine holdout. The five ticker processes
+  run fully concurrent against the Foundry deployment (no coordination
+  lock), unlike v9's serialized OpenRouter calls -- a deliberate, confirmed
+  choice for this follow-up, not a leftover default. Per-token pricing in
+  anthropic_foundry.yaml is seeded from Anthropic's public Sonnet 5 rate
+  card and is marked unconfirmed until checked against this Azure
+  subscription's own invoice/portal.

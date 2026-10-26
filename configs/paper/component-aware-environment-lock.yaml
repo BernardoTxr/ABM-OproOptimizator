@@ -1,0 +1,6 @@
+version: icaif_component_aware_environment_v1
+base_lock: environment-lock.yaml
+packages:
+  pybads: "1.0.6"
+  scikit-learn: "1.9.0"
+  torch: "2.14.0+cpu"

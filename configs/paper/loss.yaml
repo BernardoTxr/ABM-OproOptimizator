@@ -1,0 +1,48 @@
+# Primary six-group objective. One-second absolute-return ACF is retained only
+# as an unweighted diagnostic because the 30-minute estimates are dominated by
+# zero-return discreteness and unstable across simulator seed panels.
+version: smm_v4
+tick_size: 0.01
+
+standard_errors:
+  estimator: date_cluster_bootstrap
+  bootstrap_draws: 5000
+  bootstrap_seed: 20260907
+  min_standard_error: 1.0e-12
+
+groups:
+  returns:
+    - return_mean
+    - return_std
+    - return_q01
+    - return_q05
+    - return_q95
+    - return_q99
+  spread:
+    - spread_p1
+  imbalance:
+    - imbalance_mean
+    - imbalance_q10
+    - imbalance_q50
+    - imbalance_q90
+  trade_size:
+    - trade_size_q50
+    - trade_size_q90
+    - trade_size_q99
+  inter_arrival:
+    - inter_arrival_p0
+    - inter_arrival_cdf1
+    - inter_arrival_cdf5
+    - inter_arrival_q90
+    - inter_arrival_q99
+  depth:
+    - depth_bid_l1
+    - depth_bid_l2
+    - depth_bid_l3
+    - depth_bid_l4
+    - depth_bid_l5
+    - depth_ask_l1
+    - depth_ask_l2
+    - depth_ask_l3
+    - depth_ask_l4
+    - depth_ask_l5

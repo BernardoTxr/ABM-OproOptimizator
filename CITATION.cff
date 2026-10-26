@@ -1,0 +1,32 @@
+cff-version: 1.2.0
+message: >-
+  If you use this software, please cite this repository and the associated
+  paper.
+title: "ABM OPRO Optimizer"
+type: software
+version: 1.0.0
+date-released: 2026-10-26
+license: MIT
+repository-code: "https://github.com/BernardoTxr/ABM-OproOptimizator"
+url: "https://github.com/BernardoTxr/ABM-OproOptimizator"
+authors:
+  - given-names: Bernardo
+    family-names: Teixeira
+    affiliation: "Télécom Paris, Institut Polytechnique de Paris; BTG Alpha Lab"
+  - given-names: "João Pedro"
+    family-names: Alexandrino
+    affiliation: "Universidade de Fortaleza (UNIFOR)"
+  - given-names: Renan
+    family-names: Avila
+    affiliation: "Escola Politécnica, Universidade de São Paulo; BTG Alpha Lab"
+preferred-citation:
+  type: article
+  title: "Do Domain Heuristics Help LLM Optimizers Calibrate an Agent-Based Limit Order Book?"
+  year: 2026
+  authors:
+    - given-names: Bernardo
+      family-names: Teixeira
+    - given-names: "João Pedro"
+      family-names: Alexandrino
+    - given-names: Renan
+      family-names: Avila

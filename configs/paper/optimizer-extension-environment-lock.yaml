@@ -1,0 +1,6 @@
+version: icaif_optimizer_extension_environment_v1
+base_lock: environment-lock.yaml
+packages:
+  cmaes: "0.13.1"
+  pybads: "1.0.6"
+  torch: "2.14.0+cpu"

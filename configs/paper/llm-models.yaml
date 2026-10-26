@@ -1,0 +1,27 @@
+version: opro_model_registry_v1
+models:
+  openai_gpt_5_4:
+    model_id: openai/gpt-5.4
+    request:
+      temperature: 0.2
+      max_completion_tokens: 4096
+      reasoning:
+        effort: low
+    provider:
+      only: [openai]
+      allow_fallbacks: false
+      require_parameters: true
+      data_collection: deny
+  qwen_qwen3_8_flash_8192_routed:
+    model_id: qwen/qwen3.8-flash
+    request:
+      temperature: 0.2
+      max_tokens: 8192
+      reasoning:
+        max_tokens: 1024
+    provider:
+      order: [makora, alibaba]
+      only: [makora, alibaba]
+      allow_fallbacks: true
+      require_parameters: true
+      data_collection: deny

@@ -1,0 +1,14 @@
+# Exact direct-dependency environment for the frozen ICAIF 2026 benchmark.
+# Install after creating .venv; the OPRO batch validates these versions.
+click==8.4.2
+numpy==2.5.1
+pandas==3.0.3
+pyarrow==25.0.0
+PyYAML==6.0.1
+scipy==1.18.0
+sortedcontainers==2.4.0
+tqdm==4.69.0
+matplotlib==3.11.1
+optuna==4.9.0
+# Repository verification
+pytest==9.1.1

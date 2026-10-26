@@ -1,0 +1,6 @@
+# Additional exact dependency for the Azure AI Foundry / Claude Sonnet 5 OPRO
+# follow-up. Install the primary experiment environment first
+# from icaif.lock.txt. Not required for `make smoke` or `python -m pytest -q`:
+# lob_sim/optimization/anthropic_foundry_runtime.py imports this package
+# lazily, only inside its real (non-test) transport function.
+anthropic==1.8.0
